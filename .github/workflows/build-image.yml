@@ -1,9 +1,9 @@
 name: Docker Image CI
 
 on:
+  schedule:
+    - cron: '0 0 * * *'
   push:
-    branches: ["master"]
-  pull_request:
     branches: ["master"]
 
 env:
@@ -34,6 +34,10 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=schedule,pattern=nightly
+            type=schedule,pattern={{date 'YYYYMMDD-hhmmss' tz='Asia/Tokyo'}}
+            type=sha
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
